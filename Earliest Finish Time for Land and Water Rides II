@@ -1,0 +1,27 @@
+from typing import List
+import bisect
+class Solution:
+    def earliestFinishTime(self, landStartTime: List[int], landDuration: List[int], 
+                           waterStartTime: List[int], waterDuration: List[int]) -> int:
+        land_finish = sorted(s + d for s, d in zip(landStartTime, landDuration))
+        water_finish = sorted(s + d for s, d in zip(waterStartTime, waterDuration))
+        land_data = sorted(zip(landStartTime, landDuration), key=lambda x: x[0] + x[1])
+        water_data = sorted(zip(waterStartTime, waterDuration), key=lambda x: x[0] + x[1])
+        land_ends = [s + d for s, d in land_data]
+        water_ends = [s + d for s, d in water_data]  
+        ans = float('inf')
+        for ws, wd in water_data:
+            idx = bisect.bisect_right(land_ends, ws) - 1
+            if idx >= 0:
+                finish = ws + wd
+            else:
+                finish = land_ends[0] + wd
+            ans = min(ans, finish)
+        for ls, ld in land_data:
+            idx = bisect.bisect_right(water_ends, ls) - 1
+            if idx >= 0:
+                finish = ls + ld
+            else:
+                finish = water_ends[0] + ld
+            ans = min(ans, finish)
+        return ans
