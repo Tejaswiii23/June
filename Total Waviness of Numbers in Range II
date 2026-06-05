@@ -1,0 +1,50 @@
+from functools import lru_cache
+
+class Solution:
+    def totalWaviness(self, num1: int, num2: int) -> int:
+        
+        def solve(num: int) -> int:
+            digits = list(map(int, str(num)))
+            n = len(digits)
+            
+            @lru_cache(maxsize=None)
+            def dp(pos, prev_prev, prev, tight, started):
+                """
+                Returns (count_of_numbers, total_waviness_sum)
+                prev_prev, prev: last two digits placed (-1 if not placed yet)
+                """
+                if pos == n:
+                    return (1, 0)
+                
+                limit = digits[pos] if tight else 9
+                total_count = 0
+                total_wave = 0
+                
+                for d in range(0, limit + 1):
+                    new_tight = tight and (d == limit)
+                    
+                    if not started and d == 0:
+                        # Still leading zeros
+                        cnt, wave = dp(pos + 1, -1, -1, new_tight, False)
+                        total_count += cnt
+                        total_wave += wave
+                    else:
+                        new_prev_prev = prev
+                        new_prev = d
+                        extra = 0
+                        if started and prev != -1 and prev_prev != -1:
+                            if prev > prev_prev and prev > d:
+                                extra = 1  # peak
+                            elif prev < prev_prev and prev < d:
+                                extra = 1  # valley
+                        
+                        cnt, wave = dp(pos + 1, new_prev_prev, new_prev, new_tight, True)
+                        total_count += cnt
+                        total_wave += wave + extra * cnt
+                
+                return (total_count, total_wave)
+            
+            _, result = dp(0, -1, -1, True, False)
+            return result
+        
+        return solve(num2) - solve(num1 - 1)
