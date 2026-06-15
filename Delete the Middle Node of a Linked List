@@ -1,0 +1,17 @@
+from typing import Optional
+class Solution:
+    def deleteMiddle(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # If only one node, deleting middle leaves nothing
+        if head is None or head.next is None:
+            return None
+        slow = head
+        fast = head
+        prev = None
+        # Move fast by 2 and slow by 1
+        while fast and fast.next:
+            prev = slow
+            slow = slow.next
+            fast = fast.next.next
+        # 'slow' is the middle node; remove it
+        prev.next = slow.next
+        return head
