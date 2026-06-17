@@ -1,0 +1,32 @@
+class Solution:
+    def processStr(self, s: str, k: int) -> str:
+        length = 0
+        ops = [] 
+        for c in s:
+            if c == '*':
+                length = max(0, length - 1)
+            elif c == '#':
+                length = min(length * 2, 2 * 10**15) 
+            elif c == '%':
+                pass  
+            else:
+                length += 1
+            ops.append((c, length))
+        if k >= length:
+            return '.'
+        pos = k
+        for i in range(len(ops) - 1, -1, -1):
+            c, cur_len = ops[i]
+            prev_len = ops[i - 1][1] if i > 0 else 0
+            if c == '*':
+                pass  
+            elif c == '#':
+                half = cur_len // 2
+                if pos >= half:
+                    pos = pos - half 
+            elif c == '%':
+                pos = cur_len - 1 - pos
+            else:
+                if pos == prev_len:
+                    return c
+        return '.'
