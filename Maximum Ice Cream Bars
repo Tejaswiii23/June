@@ -1,0 +1,23 @@
+class Solution:
+    def maxIceCream(self, costs: List[int], coins: int) -> int:
+        # Find max cost to determine size of count array
+        max_cost = max(costs)
+        
+        # Counting sort
+        count = [0] * (max_cost + 1)
+        for cost in costs:
+            count[cost] += 1
+        
+        bars = 0
+        
+        # Greedily buy cheapest bars first
+        for price in range(1, max_cost + 1):
+            if coins <= 0:
+                break
+            if count[price] > 0:
+                # Buy as many bars at this price as we can afford
+                can_buy = min(count[price], coins // price)
+                bars += can_buy
+                coins -= can_buy * price
+        
+        return bars
