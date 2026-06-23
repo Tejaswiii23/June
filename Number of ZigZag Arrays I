@@ -1,0 +1,25 @@
+class Solution:
+    def zigZagArrays(self, n: int, l: int, r: int) -> int:
+        MOD = 10**9 + 7
+        m = r - l + 1  
+        dp_up = [0] * m
+        dp_dn = [0] * m
+        for b in range(m):
+            dp_up[b] = b
+            dp_dn[b] = (m - 1 - b)
+        dp_up = [x % MOD for x in dp_up]
+        dp_dn = [x % MOD for x in dp_dn]
+        for _ in range(2, n):
+            new_up = [0] * m
+            new_dn = [0] * m
+            pref_dn = [0] * (m + 1)
+            for i in range(m):
+                pref_dn[i + 1] = (pref_dn[i] + dp_dn[i]) % MOD
+            pref_up = [0] * (m + 1)
+            for i in range(m):
+                pref_up[i + 1] = (pref_up[i] + dp_up[i]) % MOD
+            for x in range(m):
+                new_up[x] = pref_dn[x]  # sum dp_dn[0..x-1]
+                new_dn[x] = (pref_up[m] - pref_up[x + 1]) % MOD
+            dp_up, dp_dn = new_up, new_dn
+        return (sum(dp_up) + sum(dp_dn)) % MOD
