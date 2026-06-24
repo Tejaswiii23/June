@@ -1,0 +1,53 @@
+import sys
+from typing import List
+class Solution:
+    def zigZagArrays(self, n: int, l: int, r: int) -> int:
+        MOD = 10**9 + 7
+        m = r - l + 1
+        size = 2 * m
+        def mat_mul(A, B):
+            sz = len(A)
+            C = [[0] * sz for _ in range(sz)]
+            for i in range(sz):
+                for k in range(sz):
+                    if A[i][k] == 0:
+                        continue
+                    for j in range(sz):
+                        C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % MOD
+            return C
+        def mat_pow(M, p):
+            sz = len(M)
+            result = [[1 if i == j else 0 for j in range(sz)] for i in range(sz)]
+            while p:
+                if p & 1:
+                    result = mat_mul(result, M)
+                M = mat_mul(M, M)
+                p >>= 1
+            return result
+        T = [[0] * size for _ in range(size)]
+        for v in range(m):
+            for d in range(2):
+                src = v * 2 + d
+                if d == 0: 
+                    for u in range(v):  # u < v
+                        dst = u * 2 + 1
+                        T[dst][src] = 1
+                else:  
+                    for u in range(v + 1, m):  
+                        dst = u * 2 + 0
+                        T[dst][src] = 1
+        init = [0] * size
+        for u in range(m):
+            for v in range(m):
+                if v > u:
+                    init[v * 2 + 0] = (init[v * 2 + 0] + 1) % MOD
+                elif v < u:
+                    init[v * 2 + 1] = (init[v * 2 + 1] + 1) % MOD
+        if n == 2:
+            return sum(init) % MOD
+        Tn = mat_pow(T, n - 2)
+        ans = 0
+        for dst in range(size):
+            for src in range(size):
+                ans = (ans + Tn[dst][src] * init[src]) % MOD
+        return ans
