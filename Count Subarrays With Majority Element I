@@ -1,0 +1,13 @@
+from bisect import bisect_left
+from typing import List
+class Solution:
+    def countMajoritySubarrays(self, nums: List[int], target: int) -> int:
+        pref = 0
+        sorted_prefix = [0]  
+        ans = 0
+        for x in nums:
+            pref += 1 if x == target else -1
+            idx = bisect_left(sorted_prefix, pref)
+            ans += idx
+            sorted_prefix.insert(idx, pref)
+        return ans
